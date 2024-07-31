@@ -2113,7 +2113,12 @@ class WebGLRenderer {
 
 			if ( material.isShaderMaterial && material.uniformsNeedUpdate === true ) {
 
-				WebGLUniforms.upload( _gl, getUniformList( materialProperties ), m_uniforms, textures );
+			  if ( ! refreshMaterial ) {
+
+				  WebGLUniforms.upload( _gl, getUniformList( materialProperties ), m_uniforms, textures );
+
+			  }
+
 				material.uniformsNeedUpdate = false;
 
 			}
