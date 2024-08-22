@@ -384,7 +384,7 @@ ${ flowData.code }
 
 					snippet = `sampler2DShadow ${ uniform.name };`;
 
-				} else if ( texture.isDataArrayTexture === true ) {
+				} else if ( texture.isDataArrayTexture === true || texture.isImageArrayTexture === true ) {
 
 					snippet = `${typePrefix}sampler2DArray ${ uniform.name };`;
 
@@ -733,7 +733,7 @@ ${vars}
 
 		return `#version 300 es
 
-// extensions 
+// extensions
 ${shaderData.extensions}
 
 // precision

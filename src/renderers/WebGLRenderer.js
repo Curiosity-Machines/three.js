@@ -2271,7 +2271,7 @@ class WebGLRenderer {
 
 				const texture = renderTarget.texture;
 
-				if ( texture.isData3DTexture || texture.isDataArrayTexture || texture.isCompressedArrayTexture ) {
+				if ( texture.isData3DTexture || texture.isDataArrayTexture || texture.isCompressedArrayTexture || texture.isImageArrayTexture ) {
 
 					isRenderTarget3D = true;
 
@@ -2684,7 +2684,7 @@ class WebGLRenderer {
 				textures.setTexture3D( dstTexture, 0 );
 				glTarget = _gl.TEXTURE_3D;
 
-			} else if ( dstTexture.isDataArrayTexture || dstTexture.isCompressedArrayTexture ) {
+			} else if ( dstTexture.isDataArrayTexture || dstTexture.isCompressedArrayTexture || dstTexture.isImageArrayTexture ) {
 
 				textures.setTexture2DArray( dstTexture, 0 );
 				glTarget = _gl.TEXTURE_2D_ARRAY;
@@ -2763,7 +2763,7 @@ class WebGLRenderer {
 
 				textures.setTexture3D( texture, 0 );
 
-			} else if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture ) {
+			} else if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture || texture.isImageArrayTexture ) {
 
 				textures.setTexture2DArray( texture, 0 );
 

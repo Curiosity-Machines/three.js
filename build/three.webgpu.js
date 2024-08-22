@@ -65445,7 +65445,7 @@ ${ flowData.code }
 
 					snippet = `sampler2DShadow ${ uniform.name };`;
 
-				} else if ( texture.isDataArrayTexture === true ) {
+				} else if ( texture.isDataArrayTexture === true || texture.isImageArrayTexture === true ) {
 
 					snippet = `${typePrefix}sampler2DArray ${ uniform.name };`;
 
@@ -65794,7 +65794,7 @@ ${vars}
 
 		return `#version 300 es
 
-// extensions 
+// extensions
 ${shaderData.extensions}
 
 // precision
@@ -67533,7 +67533,7 @@ class WebGLTextureUtils {
 
 			glTextureType = gl.TEXTURE_CUBE_MAP;
 
-		} else if ( texture.isDataArrayTexture === true ) {
+		} else if ( texture.isDataArrayTexture === true || texture.isImageArrayTexture ) {
 
 			glTextureType = gl.TEXTURE_2D_ARRAY;
 
@@ -67795,7 +67795,7 @@ class WebGLTextureUtils {
 
 		this.setTextureParameters( glTextureType, texture );
 
-		if ( texture.isDataArrayTexture ) {
+		if ( texture.isDataArrayTexture || texture.isImageArrayTexture ) {
 
 			gl.texStorage3D( gl.TEXTURE_2D_ARRAY, levels, glInternalFormat, width, height, depth );
 
@@ -67945,6 +67945,16 @@ class WebGLTextureUtils {
 			const image = options.image;
 
 			gl.texSubImage3D( gl.TEXTURE_2D_ARRAY, 0, 0, 0, 0, image.width, image.height, image.depth, glFormat, glType, image.data );
+
+		} else if ( texture.isImageArrayTexture ) {
+
+			const image = options.image;
+
+			for ( let i = 0; i < image.depth; i ++ ) {
+
+				gl.texSubImage3D( gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, image.width, image.height, image.depth, glFormat, glType, image.data[ i ] );
+
+			}
 
 		} else if ( texture.isData3DTexture ) {
 

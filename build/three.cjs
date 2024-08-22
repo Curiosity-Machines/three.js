@@ -24734,7 +24734,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 		let textureType = _gl.TEXTURE_2D;
 
-		if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture ) textureType = _gl.TEXTURE_2D_ARRAY;
+		if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture || texture.isImageArrayTexture ) textureType = _gl.TEXTURE_2D_ARRAY;
 		if ( texture.isData3DTexture ) textureType = _gl.TEXTURE_3D;
 
 		const forceUpload = initTexture( textureProperties, texture );
@@ -25022,6 +25022,48 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 						} else {
 
 							state.texSubImage3D( _gl.TEXTURE_2D_ARRAY, 0, 0, 0, 0, image.width, image.height, image.depth, glFormat, glType, image.data );
+
+						}
+
+					}
+
+				} else {
+
+					state.texImage3D( _gl.TEXTURE_2D_ARRAY, 0, glInternalFormat, image.width, image.height, image.depth, 0, glFormat, glType, image.data );
+
+				}
+
+			} else if ( texture.isImageArrayTexture ) {
+
+				if ( useTexStorage ) {
+
+					if ( allocateMemory ) {
+
+						state.texStorage3D( _gl.TEXTURE_2D_ARRAY, levels, glInternalFormat, image.width, image.height, image.depth );
+
+					}
+
+					if ( dataReady ) {
+
+						if ( texture.layerUpdates.size > 0 ) {
+
+							for ( const layerIndex of texture.layerUpdates ) {
+
+								const layerData = image.data[ layerIndex ];
+
+								state.texSubImage3D( _gl.TEXTURE_2D_ARRAY, 0, 0, 0, layerIndex, image.width, image.height, 1, glFormat, glType, layerData );
+
+							}
+
+							texture.clearLayerUpdates();
+
+						} else {
+
+							for ( let i = 0; i < image.depth; i ++ ) {
+
+								state.texSubImage3D( _gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, image.width, image.height, 1, glFormat, glType, image.data[ i ] );
+
+							}
 
 						}
 
@@ -30795,7 +30837,7 @@ class WebGLRenderer {
 
 				const texture = renderTarget.texture;
 
-				if ( texture.isData3DTexture || texture.isDataArrayTexture || texture.isCompressedArrayTexture ) {
+				if ( texture.isData3DTexture || texture.isDataArrayTexture || texture.isCompressedArrayTexture || texture.isImageArrayTexture ) {
 
 					isRenderTarget3D = true;
 
@@ -31208,7 +31250,7 @@ class WebGLRenderer {
 				textures.setTexture3D( dstTexture, 0 );
 				glTarget = _gl.TEXTURE_3D;
 
-			} else if ( dstTexture.isDataArrayTexture || dstTexture.isCompressedArrayTexture ) {
+			} else if ( dstTexture.isDataArrayTexture || dstTexture.isCompressedArrayTexture || dstTexture.isImageArrayTexture ) {
 
 				textures.setTexture2DArray( dstTexture, 0 );
 				glTarget = _gl.TEXTURE_2D_ARRAY;
@@ -31287,7 +31329,7 @@ class WebGLRenderer {
 
 				textures.setTexture3D( texture, 0 );
 
-			} else if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture ) {
+			} else if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture || texture.isImageArrayTexture ) {
 
 				textures.setTexture2DArray( texture, 0 );
 
@@ -34979,6 +35021,43 @@ class FramebufferTexture extends Texture {
 		this.generateMipmaps = false;
 
 		this.needsUpdate = true;
+
+	}
+
+}
+
+class ImageArrayTexture extends Texture {
+
+	constructor( data = null, width = 1, height = 1, depth = 1 ) {
+
+		super( null );
+
+		this.isImageArrayTexture = true;
+
+		this.image = { data, width, height, depth };
+
+		this.magFilter = NearestFilter;
+		this.minFilter = NearestFilter;
+
+		this.wrapR = ClampToEdgeWrapping;
+
+		this.generateMipmaps = false;
+		this.flipY = false;
+		this.unpackAlignment = 1;
+
+		this.layerUpdates = new Set();
+
+	}
+
+	addLayerUpdate( layerIndex ) {
+
+		this.layerUpdates.add( layerIndex );
+
+	}
+
+	clearLayerUpdates() {
+
+		this.layerUpdates.clear();
 
 	}
 
@@ -53934,6 +54013,7 @@ exports.HalfFloatType = HalfFloatType;
 exports.HemisphereLight = HemisphereLight;
 exports.HemisphereLightHelper = HemisphereLightHelper;
 exports.IcosahedronGeometry = IcosahedronGeometry;
+exports.ImageArrayTexture = ImageArrayTexture;
 exports.ImageBitmapLoader = ImageBitmapLoader;
 exports.ImageLoader = ImageLoader;
 exports.ImageUtils = ImageUtils;

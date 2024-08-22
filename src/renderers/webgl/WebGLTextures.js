@@ -710,7 +710,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 		let textureType = _gl.TEXTURE_2D;
 
-		if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture ) textureType = _gl.TEXTURE_2D_ARRAY;
+		if ( texture.isDataArrayTexture || texture.isCompressedArrayTexture || texture.isImageArrayTexture ) textureType = _gl.TEXTURE_2D_ARRAY;
 		if ( texture.isData3DTexture ) textureType = _gl.TEXTURE_3D;
 
 		const forceUpload = initTexture( textureProperties, texture );
@@ -998,6 +998,48 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 						} else {
 
 							state.texSubImage3D( _gl.TEXTURE_2D_ARRAY, 0, 0, 0, 0, image.width, image.height, image.depth, glFormat, glType, image.data );
+
+						}
+
+					}
+
+				} else {
+
+					state.texImage3D( _gl.TEXTURE_2D_ARRAY, 0, glInternalFormat, image.width, image.height, image.depth, 0, glFormat, glType, image.data );
+
+				}
+
+			} else if ( texture.isImageArrayTexture ) {
+
+				if ( useTexStorage ) {
+
+					if ( allocateMemory ) {
+
+						state.texStorage3D( _gl.TEXTURE_2D_ARRAY, levels, glInternalFormat, image.width, image.height, image.depth );
+
+					}
+
+					if ( dataReady ) {
+
+						if ( texture.layerUpdates.size > 0 ) {
+
+							for ( const layerIndex of texture.layerUpdates ) {
+
+								const layerData = image.data[ layerIndex ];
+
+								state.texSubImage3D( _gl.TEXTURE_2D_ARRAY, 0, 0, 0, layerIndex, image.width, image.height, 1, glFormat, glType, layerData );
+
+							}
+
+							texture.clearLayerUpdates();
+
+						} else {
+
+							for ( let i = 0; i < image.depth; i ++ ) {
+
+								state.texSubImage3D( _gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, image.width, image.height, 1, glFormat, glType, image.data[ i ] );
+
+							}
 
 						}
 
