@@ -35028,22 +35028,17 @@ class FramebufferTexture extends Texture {
 
 class ImageArrayTexture extends Texture {
 
-	constructor( data = null, width = 1, height = 1, depth = 1 ) {
+	constructor( images, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, colorSpace ) {
 
-		super( null );
+		const depth = images.length;
+
+		super( null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy, colorSpace );
 
 		this.isImageArrayTexture = true;
 
-		this.image = { data, width, height, depth };
-
-		this.magFilter = NearestFilter;
-		this.minFilter = NearestFilter;
+		this.image = { data: images, width, height, depth };
 
 		this.wrapR = ClampToEdgeWrapping;
-
-		this.generateMipmaps = false;
-		this.flipY = false;
-		this.unpackAlignment = 1;
 
 		this.layerUpdates = new Set();
 
