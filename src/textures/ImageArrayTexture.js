@@ -3,9 +3,7 @@ import { ClampToEdgeWrapping } from '../constants.js';
 
 class ImageArrayTexture extends Texture {
 
-	constructor( images, width, height, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, colorSpace ) {
-
-		const depth = images.length;
+	constructor( images, width, height, depth, format, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, colorSpace ) {
 
 		super( null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy, colorSpace );
 
