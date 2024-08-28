@@ -111,6 +111,12 @@ function WebGLMaterials( renderer, properties ) {
 
 		} else if ( material.isShaderMaterial ) {
 
+			if ( material.isVLMaterial ) {
+
+				refreshUniformsCommon( uniforms, material );
+
+			}
+
 			material.uniformsNeedUpdate = false; // #15581
 
 		}
